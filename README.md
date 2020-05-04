@@ -57,7 +57,7 @@ The libtextgen project develops a portable, efficient C++14 library that can gen
     
 5. Train model and generate text using pipeline:
     ```
-    textgen -t -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt | textgen -g
+    textgen -t -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt | textgen -g > text.txt
     ```
     
 6. Train model and generate text with custom options:
