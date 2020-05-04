@@ -60,12 +60,7 @@ The libtextgen project develops a portable, efficient C++14 library that can gen
     textgen -t -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt | textgen -g
     ```
     
-6. Download two files for training and generate text:
-    ```
-    textgen -t -g -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt https://www.gutenberg.org/files/14741/14741-0.txt
-    ```
-    
-7. Train model and generate text with custom options:
+6. Train model and generate text with custom options:
     ```
     textgen -t -g -n 2 -r \S+ -c 1 -p "Prince Andrew" -w 10 -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt https://www.gutenberg.org/files/14741/14741-0.txt
     the feeling he had left for you will agree to 
