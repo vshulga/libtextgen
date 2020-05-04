@@ -71,3 +71,14 @@ The libtextgen project develops a portable, efficient C++14 library that can gen
     * 2-word prefixes (-n 2)
     * generate starting from "Prince Andrew" prefix
     * generate maximum 10 words (-w 10)
+
+7. Randomly selected most frequent source text words:
+    ```
+    textgen -t -g -n 0 -w 20 -l en_US.UTF-8 https://www.gutenberg.org/files/2600/2600-0.txt
+    the this passing entered would so the lifted drew whip a whole ordered the the they seen the a of 
+    ```
+    ```
+    textgen -t -g -n 0 -w 20 -l en_US.UTF-8 https://www.gutenberg.org/files/14741/14741-0.txt
+    the как погрязли доколь ног своих under воздаятель случай not дух твердою никак and кто вослед кротость the дух в 
+    ```
+    
