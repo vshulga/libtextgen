@@ -2,7 +2,7 @@
 
 ### Overview
 
-The libtextgen project develops a portable, efficient C++14 library that can generate texts using Markov chain algorithm. It uses [curl](https://curl.haxx.se) command line tool for text downloading. The library was successfully built/tested with Visual Studio 14, GCC 7.5.0, Clang 11.0.0 for x86_64 platform.
+The libtextgen project develops a portable, efficient C++14 library that can generate texts using Markov chain algorithm. It uses [curl](https://curl.haxx.se) command line tool for text downloading. The library was successfully built/tested with Visual Studio 14, Visual Studio 16, GCC 6.3.0, GCC 7.5.0, Clang 11.0.0 for x86_64 platform.
 
 ### Getting the Source Code and Building/Testing libtextgen
 
