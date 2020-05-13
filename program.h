@@ -8,6 +8,9 @@
 
 namespace program
 {
+    // the class copies some ideas from python argparse module
+    // most likely in a large project I choose boost::program_options
+    // but here I decided to write my own implementation to avoid boost library dependency
     class arguments
     {
     public:

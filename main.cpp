@@ -34,12 +34,6 @@ namespace
         return io::popen("curl -s " + url, "r");
     }
 
-    template<class F>
-    inline decltype(auto) c_str(F f)
-    {
-        return [f = std::move(f)] (const auto& s) mutable { f(s.c_str()); };
-    }
-
     void train(training::model& model, const std::vector<std::string>& urls,
         const std::wregex& re, std::size_t concurrency)
     {
@@ -50,7 +44,8 @@ namespace
             while (iter != urls.end() && files.size() < concurrency)
                 files.push_back(download(*iter++));
             auto s(string::search(files.front().get(), re));
-            std::for_each(ifunction_begin(s), ifunction_end(s), c_str(train(model)));
+            std::for_each(ifunction_begin(s), ifunction_end(s),
+                [t = train(model)] (const auto& s) mutable { t(s.c_str()); });
         }
     }
 
@@ -70,6 +65,7 @@ int main(int argc, char* argv[])
 {
     try
     {
+        // stdin, stdout, and stderr streams always open in text mode by default in msvc
         io::setmode(stdin, true);
         io::setmode(stdout, true);
 
@@ -100,7 +96,8 @@ int main(int argc, char* argv[])
         const auto prefix_size(std::stoull(args.get("-n")));
         const auto concurrency(std::max(std::stoull(args.get("-c")), 1ull));
         const auto text_size(std::stoull(args.get("-w")));
-        
+
+        // replace std::cin/std::cout rdbufs if input/output files are provided        
         const auto ifile(iname.empty() ? std::shared_ptr<std::ios>() :
             set_rdbuf(std::make_shared<std::ifstream>(iname, std::ios_base::binary), std::cin));
         const auto ofile(oname.empty() ? std::shared_ptr<std::ios>() :

@@ -5,6 +5,8 @@
 
 namespace iterator
 {
+    // the class copies some ideas from boost function_input_iterator
+    // but you can specify a stop value here
     template<class F, class S>
     class ifunction : public std::iterator<std::input_iterator_tag, decltype(std::declval<F>()())>
     {

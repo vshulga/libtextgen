@@ -67,6 +67,7 @@ std::size_t model::insert(const std::list<std::size_t>& pref)
     {
         auto first(pref.begin());
         auto pos(pref_data.size());
+        // the heuristic for long prefixes, only the last word of a long prefix is stored
         if (0 < pref.size() && pref.size() <= pref_data.size() &&
             std::equal(pref.begin(), std::prev(pref.end()), pref_data.end() - pref.size() + 1))
         {
@@ -134,16 +135,21 @@ const char* generating::model::generate(std::list<std::size_t>& state,
     std::default_random_engine& urng) const
 {
     const auto iter(table.find(state.back()));
+    // no such prefix
     if (iter == table.end())
         return nullptr;
     const auto& second(iter->second);
+    // for some reason the suffixes are empty, a logic error or somebody corrupted the model
     if (second.empty())
         throw std::invalid_argument("invalid prefix");
     const auto second_iter(second.lower_bound(random(1, second.rbegin()->first, urng)));
+    // for some reason frequencies are inconsistent, a logic error or somebody corrupted the model
     if (second_iter == second.end())
         throw std::invalid_argument("invalid frequency");
+    // for some reason the position of a word is out of range, a logic error or somebody corrupted the model
     if (word_data.size() <= second_iter->second.first)
         throw std::invalid_argument("invalid word");
+    // prepare the next prefix
     state.back() = second_iter->second.second;
     return &word_data[second_iter->second.first];
 }
@@ -184,6 +190,8 @@ void generating::model::load(std::istream& is)
         std::generate_n(std::inserter(second, second.end()), a[1], [&is, sum = std::size_t{}] () mutable {
             std::size_t a[3] = {};
             is.read(reinterpret_cast<char*>(a), sizeof(a));
+            // there is a trick, we replace the word with the upper bound of the word frequency range
+            // we do not break the set ordering because inserted frequencies are sorted
             return std::make_pair(sum += a[1], std::make_pair(a[0], a[2]));
         });
         return std::make_pair(a[0], std::move(second));

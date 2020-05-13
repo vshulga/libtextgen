@@ -32,6 +32,8 @@ namespace text
             std::size_t find(const std::list<std::size_t>& pref) const;
 
         protected:
+            // lexicographical comparison of C strings
+            // we do not need strcoll here, we just need an efficient way to compare strings
             struct strcmp
             {
                 using is_transparent = int;
@@ -45,11 +47,14 @@ namespace text
                 bool operator()(const char* l, std::size_t r) const { return std::strcmp(l, data.data() + r) < 0; }
             };
 
+            // lexicographical comparison of sequences
             struct lgcmp
             {
                 using is_transparent = int;
 
+                // we use a pointer here to allow default generated assignment
                 const std::vector<std::size_t>* data;
+                // the same, we do not use const here to allow default generated assignment
                 std::size_t size;
 
                 lgcmp(const std::vector<std::size_t>& data, std::size_t size) : data(&data), size(size) {}
@@ -67,10 +72,21 @@ namespace text
             };
 
         protected:
+            // buffer with '\0' separated unique words
             std::vector<char> word_data;
+            // index for word_data, it stores positions/offsets or relative addresses of words in word_data
+            // but it also supports operations with an argument of type const char*
+            // we can use std::unordered_set in c++20 here
             std::set<std::size_t, strcmp> word_index;
+            // buffer with fixed length unique prefixes
             std::vector<std::size_t> pref_data;
+            // index for pref_data, it stores positions/offsets or relative addresses of prefixes in pref_data
+            // but it also supports operations with an argument of type std::list<std::size_t> for example
+            // we can use std::unordered_set in c++20 here
             std::set<std::size_t, lgcmp> pref_index;
+            // mapping between a prefix (position in pref_data) and its suffixes
+            // training: suffixes is mapping between a word (position in word_data) and its frequency and the prefix ending with the word
+            // generating: suffixes is mapping between an upper bound of a word frequency range and the word and the prefix ending with the word
             std::unordered_map<std::size_t, std::map<std::size_t, std::pair<std::size_t, std::size_t>>> table;
         };
 
@@ -81,6 +97,9 @@ namespace text
             public:
                 using generator::model::model;
 
+                // we use a state to allow multiple concurrent training sessions
+                // the state is a sequence of words (the prefix) and the prefix position
+                // so state.size() == prefix.size() + 1
                 void train(std::list<std::size_t>& state, const char* word);
 
                 void save(std::ostream& os) const;
@@ -94,6 +113,10 @@ namespace text
             public:
                 using generator::model::model;
 
+                // we use a state to allow multiple concurrent generating sessions
+                // the state is a sequence of words (the prefix) and the prefix position
+                // so state.size() == prefix.size() + 1
+                // btw, only state.back() is used for generation now
                 const char* generate(std::list<std::size_t>& state,
                     std::default_random_engine& urng) const;
 
